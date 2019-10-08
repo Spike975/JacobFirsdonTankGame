@@ -7,14 +7,24 @@ namespace NewRaylibGame
     public class Vector3
     {
         public float x, y, z;
+
+        public Vector3()
+        {
+
+        }
         public Vector3(float a, float b, float c)
         {
             x = a; y = b; z = c; 
+        }
+        public Vector3(Vector3 v)
+        {
+            x = v.x;y = v.y;z = v.z;
         }
         public static Vector3 operator *(Vector3 v, float numb)
         {
             return new Vector3(v.x*numb,v.y*numb,v.z*numb);
         }
+        
     }
     class Matrix3
     {
@@ -80,15 +90,25 @@ namespace NewRaylibGame
         {
             return new Matrix3(m.m1, m.m4, m.m7, m.m2, m.m5, m.m8, m.m3, m.m6, m.m9);
         }
+        public static Vector3 operator *(Matrix3 m, Vector3 v)
+        {
+            Vector3 vN = new Vector3();
+            vN.x = (m.m1 * v.x) + (m.m2 * v.y) + (m.m3 * v.z);
+            vN.y = (m.m4 * v.x) + (m.m5 * v.y) + (m.m6 * v.z);
+            vN.z = (m.m7 * v.x) + (m.m8 * v.y) + (m.m9 * v.z);
+            return vN;
+        }
         public void Translate(float x,float y)
         {
-            m1 += x;
-            m4 += y;
+            Vector3 v = new Vector3(this*new Vector3(x,y,0));
+
+            m1 += v.x;m4 += v.y;m7 += v.z;
         }
         public void SetTranslation(float x, float y)
         {
-            m1 = x;
-            m2 = y;
+            Vector3 v = new Vector3(this * new Vector3(x, y, 0));
+
+            m1 = v.x; m4 = v.y; m7 = v.z;
         }
         public void SetScaled(float x, float y, float z)
         {
