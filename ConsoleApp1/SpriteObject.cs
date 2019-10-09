@@ -27,7 +27,8 @@ namespace NewRaylibGame
         public override void OnDraw()
         {
             float rotation = (float)Math.Atan2(globalTransform.m2, globalTransform.m1);
-            Raylib.Raylib.DrawTextureEx(texture,new Vector2(globalTransform.m7, globalTransform.m8),
+            Raylib.Raylib.DrawTextureEx(texture,
+                new Vector2(globalTransform.m3, globalTransform.m6),
                 rotation * (float)(180.0f / Math.PI),
                 1, Color.WHITE);
         }

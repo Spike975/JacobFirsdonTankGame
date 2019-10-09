@@ -31,7 +31,9 @@ namespace NewRaylibGame
         public float m1, m2, m3, m4, m5, m6, m7, m8, m9;
         public Matrix3()
         {
-
+            m1 = 1; m2 = 0; m3 = 0; 
+            m4 = 0; m5 = 1; m6 = 0;
+            m7 = 0;  m8 = 0; m9 = 1; 
         }
         public static Matrix3 operator *(Matrix3 m1, Matrix3 m2)
         {
@@ -100,27 +102,25 @@ namespace NewRaylibGame
         }
         public void Translate(float x,float y)
         {
-            Vector3 v = new Vector3(this*new Vector3(x,y,0));
-
-            m1 += v.x;m4 += v.y;m7 += v.z;
+            m3 += x; m6 += y;
         }
         public void SetTranslation(float x, float y)
         {
-            Vector3 v = new Vector3(this * new Vector3(x, y, 0));
-
-            m1 = v.x; m4 = v.y; m7 = v.z;
+            m3 = x; m6 = y;
         }
         public void SetScaled(float x, float y, float z)
         {
             m1 = x; m2 = 0; m3 = 0;
             m4 = 0; m5 = y; m6 = 0;
             m7 = 0; m8 = 0; m9 = z;
-        }        public void SetScaled(Vector3 v)
+        }
+        public void SetScaled(Vector3 v)
         {
             m1 = v.x; m2 = 0; m3 = 0;
             m4 = 0; m5 = v.y; m6 = 0;
             m7 = 0; m8 = 0; m9 = v.z;
-        }        public void Set(Matrix3 m)
+        }
+        public void Set(Matrix3 m)
         {
             m1 = m.m1;
             m2 = m.m2;
@@ -131,7 +131,8 @@ namespace NewRaylibGame
             m7 = m.m7;
             m8 = m.m8;
             m9 = m.m9;
-        }        public void Scale(float x, float y, float z)
+        }
+        public void Scale(float x, float y, float z)
         {
             Matrix3 m = new Matrix3();
             m.SetScaled(x, y, z);

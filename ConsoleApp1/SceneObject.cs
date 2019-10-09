@@ -22,11 +22,20 @@ namespace NewRaylibGame
         }
         public SceneObject()
         {
-
-        }        public SceneObject Parent
+            if (parent != null)
+            {
+                parent.RemoveChild(this);
+            }
+            foreach (SceneObject so in children)
+            {
+                so.parent = null;
+            }
+        }
+        public SceneObject Parent
         {
             get { return parent; }
-        }        public int GetChildCount()
+        }
+        public int GetChildCount()
         {
             return children.Count;
         }
@@ -46,30 +55,20 @@ namespace NewRaylibGame
                 child.parent = null;
             }
         }
-        ~SceneObject()
-        {
-            if (parent != null)
-            {
-                parent.RemoveChild(this);
-            }
-            foreach (SceneObject so in children)
-            {
-                so.parent = null;
-            }
-        }        public void UpdateTransform()
+        public void UpdateTransform()
         {
 
             if (parent != null)
             {
                 globalTransform = parent.globalTransform * localTransform;
-                Console.WriteLine($"{parent.name}={parent.globalTransform.m7}");
             }
             else
                 globalTransform = localTransform;
 
            foreach (SceneObject child in children)
                 child.UpdateTransform();
-        }        public virtual void OnUpdate(float delatTime)
+        }
+        public virtual void OnUpdate(float delatTime)
         {
 
         }
@@ -115,6 +114,7 @@ namespace NewRaylibGame
         public void Translate(float x, float y)
         {
             localTransform.Translate(x, y);
+
             UpdateTransform();
         }
         public void Rotate(float radians)
