@@ -59,29 +59,24 @@ namespace NewRaylibGame
         public void Init()
         {
             stopwatch.Start();
-            lastTime = stopwatch.ElapsedMilliseconds;
-            tankSprite.Load("resources/tankBlue_outline.png");
+            lastTime = stopwatch.ElapsedMilliseconds;
+
+            tankSprite.Load("resources/tankBody_blue_outline.png");
             // sprite is facing the wrong way... fix that here
-            tankSprite.SetRotate( (float)(-90 *Math.PI / 180.0f));
-            tankSprite.name = "Tank Sprite";
+            tankSprite.SetRotate(-90 * (float)(Math.PI / 180.0f));
             // sets an offset for the base, so it rotates around the centre
-            tankSprite.SetPosition(-(tankSprite.Width / 2.0f), tankSprite.Height / 2.0f);
-            turretSprite.Load("resources/barrelBlue.png");
-            turretSprite.SetRotate((float)(-90 * Math.PI / 180.0f));
-            turretSprite.name = "Turret Sprite";
+            tankSprite.SetPosition(-tankSprite.Width / 2.0f, tankSprite.Height / 2.0f);
+
+            turretSprite.Load("resources/tankBlue_barrel2_outline.png");
+
+            turretSprite.SetRotate(-90 * (float)(Math.PI / 180.0f));            
             // set the turret offset from the tank base
             turretSprite.SetPosition(0, turretSprite.Width / 2.0f);
-            // set up the scene object hierarchy - parent the turret to the base,
-            // then the base to the tank sceneObject
-            turretObject.name = "Turret Object";
-            tankObject.name = "Tank Object";
+
             turretObject.AddChild(turretSprite);
             tankObject.AddChild(tankSprite);
-            tankObject.AddChild(turretObject);
-            // having an empty object for the tank parent means we can set the
-            // position/rotation of the tank without
-            // affecting the offset of the base sprite
-            tankObject.SetPosition((GetScreenWidth() / 2f), (GetScreenHeight() / 2f));
+            tankObject.AddChild(turretObject);
+            tankObject.SetPosition(GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f);
         }
         public void Shutdown()
         { }
@@ -109,14 +104,14 @@ namespace NewRaylibGame
             {
                 Vector3 facing = new Vector3(
                tankObject.LocalTransform.m1,
-               tankObject.LocalTransform.m2, 1) * deltaTime * 100;
+               tankObject.LocalTransform.m4, 1) * deltaTime * 100;
                 tankObject.Translate(facing.x, facing.y);
             }
             if (IsKeyDown(KeyboardKey.KEY_S))
             {
                 Vector3 facing = new Vector3(
                tankObject.LocalTransform.m1,
-               tankObject.LocalTransform.m2, 1) * deltaTime * -100;
+               tankObject.LocalTransform.m4, 1) * deltaTime * -100;
                 tankObject.Translate(facing.x, facing.y);
             }
             if (IsKeyDown(KeyboardKey.KEY_Q))
@@ -137,8 +132,26 @@ namespace NewRaylibGame
             ClearBackground(Color.WHITE);
             DrawText(fps.ToString(), 10, 10, 12, Color.RED);
 
-            tankObject.Draw();
+            if (tankObject.GlobalTransform.m3 < -25)
+            {
+                tankObject.GlobalTransform.m3 = 660;
+            }
+            if (tankObject.GlobalTransform.m3 > 660)
+            {
+                tankObject.GlobalTransform.m3 = -25;
+            }
 
+            if (tankObject.GlobalTransform.m6 < -20)
+            {
+                tankObject.GlobalTransform.m6 = 510;
+            }
+            if (tankObject.GlobalTransform.m6 > 510)
+            {
+                tankObject.GlobalTransform.m6 = -20;
+            }
+
+            tankObject.Draw();
+            Console.WriteLine();//-25 -- 660     -20 -- 510
             EndDrawing();
         }
     }
