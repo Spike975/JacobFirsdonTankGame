@@ -7,7 +7,6 @@ namespace NewRaylibGame
     class SpriteObject : SceneObject
     {
         Texture2D texture = new Texture2D();
-        Image image = new Image();
         public float Width
         {
             get { return texture.width; }

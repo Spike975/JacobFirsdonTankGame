@@ -7,7 +7,6 @@ namespace NewRaylibGame
     
     class SceneObject
     {
-        public string name;
         protected SceneObject parent = null;
         protected List<SceneObject> children = new List<SceneObject>();
         protected Matrix3 localTransform = new Matrix3();
