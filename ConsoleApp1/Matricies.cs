@@ -10,7 +10,7 @@ namespace NewRaylibGame
 
         public Vector3()
         {
-
+            x = 0;y = 0;z = 0;
         }
         public Vector3(float a, float b, float c)
         {
@@ -24,7 +24,30 @@ namespace NewRaylibGame
         {
             return new Vector3(v.x*numb,v.y*numb,v.z*numb);
         }
-        
+        public static Vector3 operator *(float numb, Vector3 v)
+        {
+            return new Vector3(v.x * numb, v.y * numb, v.z * numb);
+        }
+        public static Vector3 operator +(Vector3 v1, Vector3 v2)
+        {
+            return new Vector3(v1.x+v2.x,v1.y+v2.y,v1.z+v2.z);
+        }
+        public static Vector3 operator -(Vector3 v1, Vector3 v2)
+        {
+            return new Vector3(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
+        }
+
+        public static Vector3 Min(Vector3 a, Vector3 b)
+        {
+            return new Vector3(Math.Min(a.x, b.x), Math.Min(a.y, b.y), Math.Min(a.z, b.z));
+        }
+        public static Vector3 Max(Vector3 a, Vector3 b)
+        {
+            return new Vector3(Math.Max(a.x, b.x), Math.Max(a.y, b.y), Math.Max(a.z, b.z));
+        }        public static Vector3 Clamp(Vector3 t, Vector3 a, Vector3 b)
+        {
+            return Max(b, Min(b, t));
+        }
     }
     class Matrix3
     {
@@ -173,6 +196,71 @@ namespace NewRaylibGame
             Matrix3 m = new Matrix3();
             m.SetRotateZ(radians);
             Set(this * m);
+        }
+    }
+    class AABB
+    {
+        Vector3 min = new Vector3(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity);
+        Vector3 max = new Vector3(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity);
+
+        public AABB()
+        {
+
+        }
+        public AABB(Vector3 min, Vector3 max)
+        {
+            this.max = max; this.min = min;
+        }
+        public Vector3 Center()
+        {
+            return (min + max) * .5f;
+        }
+        public Vector3 Extents()
+        {
+            return new Vector3(Math.Abs(max.x - min.x) * 0.5f, 
+                Math.Abs(max.y - min.y) * 0.5f, 
+                Math.Abs(max.z - min.z) * 0.5f);
+        }
+        public List<Vector3> Corners()
+        {
+            // ignoring z axis for 2D
+            List<Vector3> corners = new List<Vector3>(4);
+            corners[0] = min;
+            corners[1] = new Vector3(min.x, max.y, min.z);
+            corners[2] = max;
+            corners[3] = new Vector3(max.x, min.y, min.z);
+            return corners;
+        }
+        public void Fit(List<Vector3> points)
+        {
+            min = new Vector3(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity);
+            max = new Vector3(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity);
+            foreach(Vector3 p in points)
+            {
+                min = Vector3.Min(min, p);
+                max = Vector3.Max(max, p);
+            }
+        }
+        public void Fit(Vector3[] points)
+        {
+            min = new Vector3(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity);
+            max = new Vector3(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity);
+            foreach (Vector3 p in points)
+            {
+                min = Vector3.Min(min, p);
+                max = Vector3.Max(max, p);
+            }
+        }
+        public bool Overlaps(Vector3 p)
+        {
+            return !(p.x < min.x || p.y < min.y || p.x > max.x || p.y > max.y);
+        }
+        public bool Overlaps(AABB other)
+        {
+            return !(max.x < other.min.x || max.y < other.min.y || min.x > other.max.x || min.y > other.max.y);
+        }        public Vector3 ClosestPoint(Vector3 p)
+        {
+            return Vector3.Clamp(p, min, max);
         }
     }
 }

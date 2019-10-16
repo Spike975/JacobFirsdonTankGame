@@ -26,10 +26,11 @@ namespace NewRaylibGame
         public override void OnDraw()
         {
             float rotation = (float)Math.Atan2(globalTransform.m4, globalTransform.m1);
-            Raylib.Raylib.DrawTextureEx(texture,
+            DrawTextureEx(texture,
                 new Vector2(globalTransform.m3, globalTransform.m6),
                 rotation * (float)(180.0f / Math.PI),
                 1, Color.WHITE);
+            DrawRectangleLines((int)(parent.GlobalTransform.m3 - texture.width / 2f), (int)(parent.GlobalTransform.m6 - texture.height / 2), texture.width, texture.height, Color.BLACK);
         }
     }
 }

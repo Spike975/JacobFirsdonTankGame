@@ -56,6 +56,8 @@ namespace NewRaylibGame
         public static SpriteObject tankSprite = new SpriteObject();
         public static SpriteObject turretSprite = new SpriteObject();
         public static SpriteObject bulletSpawner = new SpriteObject();
+        public static Circle[] bulletZone = new Circle[5000];
+        public static Circle c1 = new Circle();
         Time time = new Time();
         Texture2D bullet = new Texture2D();
         Bullet[] bullets = new Bullet[5000];
@@ -92,7 +94,11 @@ namespace NewRaylibGame
             tankObject.AddChild(turretObject);
 
             tankObject.SetPosition(GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f);
-
+            
+            c1.SetColor(Color.BLACK);
+            c1.SetX(5);
+            c1.SetY(5);
+            c1.SetR(20);
         }
         public void Shutdown()
         { }
@@ -149,7 +155,39 @@ namespace NewRaylibGame
                 bullets[totalBullets].transform = bulletSpawner.GlobalTransform;
                 bullets[totalBullets].xSpeed = 300 * bulletSpawner.GlobalTransform.m1;
                 bullets[totalBullets].ySpeed = 300 * bulletSpawner.GlobalTransform.m4;
+                bulletZone[totalBullets] = new Circle();
+                bulletZone[totalBullets].SetColor(Color.BLACK);
+                bulletZone[totalBullets].SetR(bullet.height / 2f);
+                bulletZone[totalBullets].SetX(bullets[totalBullets].transform.m3);
+                bulletZone[totalBullets].SetY(bullets[totalBullets].transform.m6);
                 totalBullets++;
+            }
+
+            if (IsKeyDown(KeyboardKey.KEY_UP))
+            {
+                c1.ChangeY(-deltaTime * 100);
+            }
+            if (IsKeyDown(KeyboardKey.KEY_DOWN))
+            {
+                c1.ChangeY(deltaTime * 100);
+            }
+            if (IsKeyDown(KeyboardKey.KEY_LEFT))
+            {
+                c1.ChangeX(-deltaTime * 100);
+            }
+            if (IsKeyDown(KeyboardKey.KEY_RIGHT))
+            {
+                c1.ChangeX(deltaTime * 100);
+            }
+            for (int i = 0; i < totalBullets; i++) {
+                if (CheckCollisionCircles(new Vector2(c1.x, c1.y), c1.radius, new Vector2(bulletZone[i].x,bulletZone[i].y), bulletZone[i].radius))
+                {
+                    c1.SetColor(Color.BLUE);
+                }
+                else if(!CheckCollisionCircles(new Vector2(c1.x, c1.y), c1.radius, new Vector2(bulletZone[i].x, bulletZone[i].y), bulletZone[i].radius))
+                {
+                    c1.SetColor(Color.BLACK);
+                }
             }
             tankObject.Update(deltaTime);
 
@@ -182,14 +220,21 @@ namespace NewRaylibGame
             {
                 float rotation = (float)Math.Atan2(bullets[i].transform.m4, bullets[i].transform.m1);
                 DrawTextureEx(bullet, new Vector2(bullets[i].transform.m3, bullets[i].transform.m6), rotation * (float)(180.0f / Math.PI) + 90, 1, Color.WHITE);
+
+                bulletZone[i].Draw();
+
                 bullets[i].transform.m3 += bullets[i].xSpeed * deltaTime;
                 bullets[i].transform.m6 += bullets[i].ySpeed * deltaTime;
+
+                bulletZone[i].SetX(bullets[i].transform.m3 + bullet.width/2f);
+                bulletZone[i].SetY(bullets[i].transform.m6 + bullet.height/2f);
 
                 if (bullets[i].transform.m3 > GetScreenWidth() + bullet.width)//640, 480
                 {
                     for (int x = i; x < 19; x++)
                     {
                         bullets[x] = bullets[x + 1];
+                        bulletZone[x] = bulletZone[x + 1];
                     }
                     totalBullets--;
                 }
@@ -198,6 +243,7 @@ namespace NewRaylibGame
                     for (int x = i; x < 19; x++)
                     {
                         bullets[x] = bullets[x + 1];
+                        bulletZone[x] = bulletZone[x + 1];
                     }
                     totalBullets--;
                 }
@@ -206,6 +252,7 @@ namespace NewRaylibGame
                     for (int x = i; x < 19; x++)
                     {
                         bullets[x] = bullets[x + 1];
+                        bulletZone[x] = bulletZone[x + 1];
                     }
                     totalBullets--;
                 }
@@ -214,10 +261,12 @@ namespace NewRaylibGame
                     for (int x = i; x < 19; x++)
                     {
                         bullets[x] = bullets[x + 1];
+                        bulletZone[x] = bulletZone[x + 1];
                     }
                     totalBullets--;
                 }
             }
+            c1.Draw();
             tankObject.Draw();
             EndDrawing();
         }
