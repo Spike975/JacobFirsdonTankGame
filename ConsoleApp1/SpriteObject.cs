@@ -6,7 +6,7 @@ namespace NewRaylibGame
 {
     class SpriteObject : SceneObject
     {
-        Texture2D texture = new Texture2D();
+        public Texture2D texture = new Texture2D();
         public float Width
         {
             get { return texture.width; }
@@ -20,8 +20,15 @@ namespace NewRaylibGame
         }
         public void Load(string filename)
         {
-            Image img = LoadImage(filename);
-            texture = LoadTextureFromImage(img);
+            if (filename != null)
+            {
+                Image img = LoadImage(filename);
+                texture = LoadTextureFromImage(img);
+            }
+            else
+            {
+                texture = new Texture2D();
+            }
         }
         public override void OnDraw()
         {
@@ -30,7 +37,6 @@ namespace NewRaylibGame
                 new Vector2(globalTransform.m3, globalTransform.m6),
                 rotation * (float)(180.0f / Math.PI),
                 1, Color.WHITE);
-            DrawRectangleLines((int)(parent.GlobalTransform.m3 - texture.width / 2f), (int)(parent.GlobalTransform.m6 - texture.height / 2), texture.width, texture.height, Color.BLACK);
         }
     }
 }

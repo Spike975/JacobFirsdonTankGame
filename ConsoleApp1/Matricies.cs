@@ -44,10 +44,15 @@ namespace NewRaylibGame
         public static Vector3 Max(Vector3 a, Vector3 b)
         {
             return new Vector3(Math.Max(a.x, b.x), Math.Max(a.y, b.y), Math.Max(a.z, b.z));
-        }        public static Vector3 Clamp(Vector3 t, Vector3 a, Vector3 b)
+        }
+        public static Vector3 Clamp(Vector3 t, Vector3 a, Vector3 b)
         {
             return Max(b, Min(b, t));
         }
+    }
+    public class Vector4
+    {
+        float x, y, z, w;
     }
     class Matrix3
     {
@@ -200,8 +205,8 @@ namespace NewRaylibGame
     }
     class AABB
     {
-        Vector3 min = new Vector3(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity);
-        Vector3 max = new Vector3(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity);
+        public Vector3 min = new Vector3(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity);
+        public Vector3 max = new Vector3(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity);
 
         public AABB()
         {
@@ -210,6 +215,14 @@ namespace NewRaylibGame
         public AABB(Vector3 min, Vector3 max)
         {
             this.max = max; this.min = min;
+        }
+        public void SetMin(Vector3 v)
+        {
+            min = v;
+        }
+        public void SetMax(Vector3 v)
+        {
+            max = v;
         }
         public Vector3 Center()
         {
@@ -225,10 +238,10 @@ namespace NewRaylibGame
         {
             // ignoring z axis for 2D
             List<Vector3> corners = new List<Vector3>(4);
-            corners[0] = min;
-            corners[1] = new Vector3(min.x, max.y, min.z);
-            corners[2] = max;
-            corners[3] = new Vector3(max.x, min.y, min.z);
+            corners.Add(min);
+            corners.Add(new Vector3(min.x, max.y, min.z));
+            corners.Add(max);
+            corners.Add(new Vector3(max.x, min.y, min.z));
             return corners;
         }
         public void Fit(List<Vector3> points)
@@ -258,7 +271,8 @@ namespace NewRaylibGame
         public bool Overlaps(AABB other)
         {
             return !(max.x < other.min.x || max.y < other.min.y || min.x > other.max.x || min.y > other.max.y);
-        }        public Vector3 ClosestPoint(Vector3 p)
+        }
+        public Vector3 ClosestPoint(Vector3 p)
         {
             return Vector3.Clamp(p, min, max);
         }

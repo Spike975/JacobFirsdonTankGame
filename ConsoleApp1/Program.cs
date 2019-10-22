@@ -8,10 +8,10 @@ namespace NewRaylibGame
 
     static class Program
     {
+         public static Game game = new Game();
         
         public static int Main()
         {
-            Game game = new Game();
             // Initialization
             //--------------------------------------------------------------------------------------
             InitWindow(640, 480, "(bad tank pun)");
@@ -51,24 +51,33 @@ namespace NewRaylibGame
     }
     class Game
     {
-        public static SceneObject tankObject = new SceneObject();
-        public static SceneObject turretObject = new SceneObject();
-        public static SpriteObject tankSprite = new SpriteObject();
-        public static SpriteObject turretSprite = new SpriteObject();
-        public static SpriteObject bulletSpawner = new SpriteObject();
-        public static Circle[] bulletZone = new Circle[5000];
-        public static Circle c1 = new Circle();
-        Time time = new Time();
-        Texture2D bullet = new Texture2D();
+        SceneObject turretObject = new SceneObject();
+        SceneObject tankObject = new SceneObject();
+        SceneObject bulletSpawner = new SceneObject();
+        SceneObject ammoObject = new SceneObject();
+        SpriteObject tankSprite = new SpriteObject();
+        SpriteObject turretSprite = new SpriteObject();
+        SpriteObject ammoSprite = new SpriteObject();
+        Firing bulletExplosion = new Firing();
+        Texture2D[] barrels = new Texture2D[5];
+        AABB tank = new AABB();
+        static Circle[] bulletZone = new Circle[5000];
+        static Circle c1 = new Circle();
+        static Time time = new Time();
+        static Texture2D bullet = new Texture2D();
         Bullet[] bullets = new Bullet[5000];
-        public int totalBullets = 0;
+        int totalBullets = 0;
         Stopwatch stopwatch = new Stopwatch();
-        private long currentTime = 0;
-        private long lastTime = 0;
-        private float timer = 0;
-        private int fps = 1;
-        private int frames;
-        private float deltaTime = 0.005f;
+        long currentTime = 0;
+        long lastTime = 0;
+        float timer = 0;
+        int speed = 0;
+        int barrel = 0;
+        int fps = 1;
+        int frames;
+        int capacity = 20;
+        float deltaTime = 0.005f;
+        double shotTime = 0f;
         public void Init()
         {
             stopwatch.Start();
@@ -80,14 +89,18 @@ namespace NewRaylibGame
             // sets an offset for the base, so it rotates around the centre
             tankSprite.SetPosition(-tankSprite.Width / 2.0f, tankSprite.Height / 2.0f);
 
-            turretSprite.Load("resources/tankBlue_barrel2_outline.png");
+            turretSprite.Load("resources/barrel1.png");
+            barrel = 1;
+            for(int i = 0; i < barrels.Length;i++)
+                barrels[i] = LoadTextureFromImage(LoadImage($"resources/barrel{i+1}.png"));
 
             turretSprite.SetRotate(-90 * (float)(Math.PI / 180.0f));
+            bulletExplosion.SetRotate(-90 * (float)(Math.PI / 180.0f));
 
             // set the turret offset from the tank base
             turretSprite.SetPosition(0, turretSprite.Width / 2.0f);
 
-
+            bulletSpawner.AddChild(bulletExplosion);
             turretObject.AddChild(turretSprite);
             turretObject.AddChild(bulletSpawner);
             tankObject.AddChild(tankSprite);
@@ -104,7 +117,10 @@ namespace NewRaylibGame
         { }
         public void Update()
         {
+            tank.SetMin(new Vector3(tankSprite.GlobalTransform.m3, tankSprite.GlobalTransform.m6, 0));
+            tank.SetMax(new Vector3(tankObject.GlobalTransform.m3+tankSprite.Width, tankObject.GlobalTransform.m6+tankSprite.Height, 0));
             bulletSpawner.SetPosition(turretSprite.Height+10, -4);
+            bulletExplosion.SetPosition(turretSprite.Height-40, 14);
             currentTime = stopwatch.ElapsedMilliseconds;
             deltaTime = (currentTime - lastTime) / 1000.0f;
             timer += deltaTime;
@@ -115,26 +131,36 @@ namespace NewRaylibGame
                 timer -= 1;
             }
             frames++;
+
+            if (IsKeyDown(KeyboardKey.KEY_LEFT_SHIFT))
+            {
+                speed = 2;
+            }
+            else
+            {
+                speed = 1;
+            }
+
             if (IsKeyDown(KeyboardKey.KEY_A))
             {
-                tankObject.Rotate(-deltaTime);
+                tankObject.Rotate(-deltaTime*speed);
             }
             if (IsKeyDown(KeyboardKey.KEY_D))
             {
-                tankObject.Rotate(deltaTime);
+                tankObject.Rotate(deltaTime * speed);
             }
             if (IsKeyDown(KeyboardKey.KEY_W))
             {
                 Vector3 facing = new Vector3(
                tankObject.LocalTransform.m1,
-               tankObject.LocalTransform.m4, 1) * deltaTime * 100;
+               tankObject.LocalTransform.m4, 1) * deltaTime * 100 * speed;
                 tankObject.Translate(facing.x, facing.y);
             }
             if (IsKeyDown(KeyboardKey.KEY_S))
             {
                 Vector3 facing = new Vector3(
                tankObject.LocalTransform.m1,
-               tankObject.LocalTransform.m4, 1) * deltaTime * -100;
+               tankObject.LocalTransform.m4, 1) * deltaTime * -100 * speed;
                 tankObject.Translate(facing.x, facing.y);
             }
             if (IsKeyDown(KeyboardKey.KEY_Q))
@@ -146,7 +172,7 @@ namespace NewRaylibGame
                 turretObject.Rotate(deltaTime);
             }
 
-            if (IsKeyPressed(KeyboardKey.KEY_SPACE))
+            if (IsKeyDown(KeyboardKey.KEY_SPACE)&&GetTime()-shotTime > .5f&&capacity > 0)
             {
                 if (totalBullets < 0)
                 {
@@ -161,6 +187,22 @@ namespace NewRaylibGame
                 bulletZone[totalBullets].SetX(bullets[totalBullets].transform.m3);
                 bulletZone[totalBullets].SetY(bullets[totalBullets].transform.m6);
                 totalBullets++;
+                capacity--;
+                shotTime = GetTime();
+                bulletExplosion.time = GetTime();
+            }
+            if (IsKeyPressed(KeyboardKey.KEY_TAB))
+            {
+                barrel++;
+                if (barrel > 5)
+                {
+                    barrel = 1;
+                }
+                turretSprite.texture = barrels[barrel];
+            }
+            if (IsKeyPressed(KeyboardKey.KEY_R)&&capacity == 0)
+            {
+                capacity = 20;
             }
 
             if (IsKeyDown(KeyboardKey.KEY_UP))
@@ -184,7 +226,7 @@ namespace NewRaylibGame
                 {
                     c1.SetColor(Color.BLUE);
                 }
-                else if(!CheckCollisionCircles(new Vector2(c1.x, c1.y), c1.radius, new Vector2(bulletZone[i].x, bulletZone[i].y), bulletZone[i].radius))
+                else //if(!CheckCollisionCircles(new Vector2(c1.x, c1.y), c1.radius, new Vector2(bulletZone[i].x, bulletZone[i].y), bulletZone[i].radius))
                 {
                     c1.SetColor(Color.BLACK);
                 }
@@ -198,6 +240,7 @@ namespace NewRaylibGame
             BeginDrawing();
             ClearBackground(Color.WHITE);
             DrawText(fps.ToString(), 10, 10, 12, Color.RED);
+            DrawText(capacity.ToString(), 10, GetScreenHeight()-20, 12, Color.RED);
 
             if (tankObject.GlobalTransform.m3 < -25)
             {
@@ -226,8 +269,8 @@ namespace NewRaylibGame
                 bullets[i].transform.m3 += bullets[i].xSpeed * deltaTime;
                 bullets[i].transform.m6 += bullets[i].ySpeed * deltaTime;
 
-                bulletZone[i].SetX(bullets[i].transform.m3 + bullet.width/2f);
-                bulletZone[i].SetY(bullets[i].transform.m6 + bullet.height/2f);
+                bulletZone[i].SetX(bullets[i].transform.m3 + bullet.width / 2f);
+                bulletZone[i].SetY(bullets[i].transform.m6 + bullet.height / 2f);
 
                 if (bullets[i].transform.m3 > GetScreenWidth() + bullet.width)//640, 480
                 {
@@ -266,6 +309,11 @@ namespace NewRaylibGame
                     totalBullets--;
                 }
             }
+            DrawRectangleLines((int)tank.min.x, (int)tank.min.y, (int)(tank.max.x - tank.min.x), (int)(tank.max.y-tank.min.y),Color.BLACK);
+
+            DrawRectanglePro(new Rectangle(tankObject.GlobalTransform.m3, tankObject.GlobalTransform.m6, tankSprite.Width, tankSprite.Height),new Vector2(tankSprite.Width/2f, tankSprite.Height/2f), (float)Math.Atan2(tankSprite.GlobalTransform.m4, tankSprite.GlobalTransform.m1)* (float)(180.0f / Math.PI)+90,Color.RED);
+
+            //bulletExplosion.isFiring();
             c1.Draw();
             tankObject.Draw();
             EndDrawing();

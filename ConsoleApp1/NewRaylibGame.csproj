@@ -23,7 +23,26 @@
     <None Update="resources\bulletBlue1_outline.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="resources\tankBlue_barrel2_outline.png">
+    <None Update="resources\crateWood_side.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\barrel1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CustomToolNamespace>barrel</CustomToolNamespace>
+    </None>
+    <None Update="resources\Image1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\shotLarge.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\shotOrange.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\shotRed.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\shotThin.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="resources\tankBlue_outline.png">
@@ -31,6 +50,22 @@
     </None>
     <None Update="resources\tankBody_blue_outline.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="resources\barrel2.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CustomToolNamespace>barrel</CustomToolNamespace>
+    </None>
+    <None Update="resources\barrel3.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CustomToolNamespace>barrel</CustomToolNamespace>
+    </None>
+    <None Update="resources\barrel4.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CustomToolNamespace>barrel</CustomToolNamespace>
+    </None>
+    <None Update="resources\barrel5.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CustomToolNamespace>barrel</CustomToolNamespace>
     </None>
   </ItemGroup>
 
