@@ -205,8 +205,8 @@ namespace NewRaylibGame
     }
     class AABB
     {
-        public Vector3 min = new Vector3(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity);
-        public Vector3 max = new Vector3(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity);
+        public Vector3 min = new Vector3();
+        public Vector3 max = new Vector3();
 
         public AABB()
         {

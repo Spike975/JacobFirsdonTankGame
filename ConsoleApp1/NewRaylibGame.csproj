@@ -23,7 +23,7 @@
     <None Update="resources\bulletBlue1_outline.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="resources\crateWood_side.png">
+    <None Update="resources\crate.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="resources\barrel1.png">
