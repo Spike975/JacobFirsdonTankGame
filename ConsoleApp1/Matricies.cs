@@ -36,7 +36,25 @@ namespace NewRaylibGame
         {
             return new Vector3(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
         }
-
+        public float Magnitude()
+        {
+            return (float)Math.Sqrt(x * x + y * y + z * z);
+        }
+        public float MagnitudeSqr()
+        {
+            return Magnitude() * Magnitude();
+        }
+        public void Normalize()
+        {
+            float m = Magnitude();
+            x /= m;
+            y /= m;
+            z /= m;
+        }
+        public float Dot(Vector3 v)
+        {
+            return (float)x * v.x + y * v.y + z * v.z;
+        }
         public static Vector3 Min(Vector3 a, Vector3 b)
         {
             return new Vector3(Math.Min(a.x, b.x), Math.Min(a.y, b.y), Math.Min(a.z, b.z));

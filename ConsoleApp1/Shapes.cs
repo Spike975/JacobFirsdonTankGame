@@ -67,6 +67,56 @@ namespace NewRaylibGame
         {
             return radius;
         }
+        public bool Overlaps(Box box)
+        {
+            float xDistance = 0;
+            float yDistance = 0;
+            if (x< box.x)
+            {
+                xDistance = x-box.x;
+            }else if (x > box.x+box.w)
+            {
+                xDistance = x-box.x + box.w;
+            }
+            if (y< box.y)
+            {
+                yDistance = y-box.y;
+            }else if (y > box.y+box.l)
+            {
+                yDistance = y-box.y + box.l;
+            }
+            float distance = (float)Math.Sqrt((xDistance*xDistance) + (yDistance* yDistance));
+            if (distance <= radius)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        public bool Overlaps(Vector3 p)
+        {
+            Vector3 center = new Vector3(x,y,0);
+            Vector3 toPoint = p - center;
+            return toPoint.MagnitudeSqr() <= (radius * radius);
+        }
+        public bool Overlaps(Circle other)
+        {
+            float xDistance = MathF.Abs(x - other.x);
+            float yDistance = MathF.Abs(y - other.y);
+            float hyp = MathF.Sqrt((xDistance*xDistance)+(yDistance *yDistance));
+            float totalRad = radius + other.radius;
+            return hyp <= totalRad;
+
+            //Vector3 center = new Vector3(x, y, 0);
+            //Vector3 otherCenter = new Vector3(other.x, other.y, 0);
+            //Vector3 diff = otherCenter - center;
+            //// compare distance between spheres to combined radii
+            //float r = radius + other.radius;
+            //return diff.MagnitudeSqr() <= (r * r);
+        }
+
     }
     class Sphere
     {
@@ -92,8 +142,40 @@ namespace NewRaylibGame
             center = (min + max) * .5f;
         }
     }
-    class Square
+    class Box
     {
-        float x, y, l, w;
+        public float x, y, l, w;
+        public Box()
+        {
+            x = 0;y = 0;w = 0;l = 0;
+        }
+        public Box(float a, float b, float c, float d)
+        {
+            x = a; y = b; l = c; w = d;
+        }
+        public void SetPosition(float a, float b)
+        {
+            x = a; y = b;
+        }
+        public void ChangePosition(float a, float b)
+        {
+            x += a; y += b;
+        }
+        public void SetArea(float a, float b)
+        {
+            w = a; l = b;
+        }
+        public void Draw()
+        {
+            DrawRectangleLines((int)x, (int)y, (int)w, (int)l, Color.BLACK);
+        }
+        public Vector3 ClosestPoint(Vector3 p)
+        {
+            return Vector3.Clamp(p, new Vector3(x, y, 1), new Vector3(x+w, y+l, 1));
+        }
+        public bool Overlap(Box other)
+        {
+            return !(x < other.x || y < other.y || x + l > other.x+ other.l || y + w > other.y + other.w);
+        }
     }
 }

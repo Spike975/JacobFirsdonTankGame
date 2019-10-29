@@ -4,7 +4,6 @@ using System.Text;
 
 namespace NewRaylibGame
 {
-    
     class SceneObject
     {
         protected SceneObject parent = null;
