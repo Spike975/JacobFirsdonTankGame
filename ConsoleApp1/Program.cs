@@ -283,47 +283,47 @@ namespace NewRaylibGame
                 fire = true;
                 phase = GetTime();
             }
-            //Reload for testing
-            if (IsKeyDown(KeyboardKey.KEY_R))
-            {
-                capacity += bull;
-            }
-            //Speeding up the bullets for testing
-            if (IsMouseButtonPressed(MouseButton.MOUSE_LEFT_BUTTON))
-            {
-                bulletSpeed += 200;
-            }
-            //Slowing down the bullets for testing
-            if (IsMouseButtonPressed(MouseButton.MOUSE_RIGHT_BUTTON))
-            {
-                bulletSpeed -= 200;
-            }
+            ////Reload for testing
+            //if (IsKeyDown(KeyboardKey.KEY_R))
+            //{
+            //    capacity += bull;
+            //}
+            ////Speeding up the bullets for testing
+            //if (IsMouseButtonPressed(MouseButton.MOUSE_LEFT_BUTTON))
+            //{
+            //    bulletSpeed += 200;
+            //}
+            ////Slowing down the bullets for testing
+            //if (IsMouseButtonPressed(MouseButton.MOUSE_RIGHT_BUTTON))
+            //{
+            //    bulletSpeed -= 200;
+            //}
 
             ////Random
-            //Center tank inn center of screen
-            if (IsKeyPressed(KeyboardKey.KEY_U))
-            {
-                tankObject.SetPosition(GetScreenWidth() / 2f, GetScreenHeight() / 2f);
-            }
-            //Changes Tank Barrel,Will also change tank body
-            if (IsKeyPressed(KeyboardKey.KEY_TAB))
-            {
-                barrel++;
-                if (barrel > 4)
-                {
-                    barrel = 0;
-                }
-                tankSprite.texture = tankBody[barrel];
-                turretSprite.texture = barrels[barrel];
-            }
-            //Sets tank rotation back to when it was spawned
-            if (IsKeyPressed(KeyboardKey.KEY_O))
-            {
-                float x = tankObject.GlobalTransform.m3;
-                float y = tankObject.GlobalTransform.m6;
-                tankObject.SetRotate(0);
-                tankObject.SetPosition(x, y);
-            }
+            ////Center tank inn center of screen
+            //if (IsKeyPressed(KeyboardKey.KEY_U))
+            //{
+            //    tankObject.SetPosition(GetScreenWidth() / 2f, GetScreenHeight() / 2f);
+            //}
+            ////Changes Tank Barrel,Will also change tank body
+            //if (IsKeyPressed(KeyboardKey.KEY_TAB))
+            //{
+            //    barrel++;
+            //    if (barrel > 4)
+            //    {
+            //        barrel = 0;
+            //    }
+            //    tankSprite.texture = tankBody[barrel];
+            //    turretSprite.texture = barrels[barrel];
+            //}
+            ////Sets tank rotation back to when it was spawned
+            //if (IsKeyPressed(KeyboardKey.KEY_O))
+            //{
+            //    float x = tankObject.GlobalTransform.m3;
+            //    float y = tankObject.GlobalTransform.m6;
+            //    tankObject.SetRotate(0);
+            //    tankObject.SetPosition(x, y);
+            //}
             //Rotates turret to starting position
             if (IsKeyPressed(KeyboardKey.KEY_T))
             {
