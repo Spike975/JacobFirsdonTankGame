@@ -108,16 +108,10 @@ namespace NewRaylibGame
             float hyp = MathF.Sqrt((xDistance*xDistance)+(yDistance *yDistance));
             float totalRad = radius + other.radius;
             return hyp <= totalRad;
-
-            //Vector3 center = new Vector3(x, y, 0);
-            //Vector3 otherCenter = new Vector3(other.x, other.y, 0);
-            //Vector3 diff = otherCenter - center;
-            //// compare distance between spheres to combined radii
-            //float r = radius + other.radius;
-            //return diff.MagnitudeSqr() <= (r * r);
         }
 
     }
+    //Not used
     class Sphere
     {
         Vector3 center;
@@ -153,29 +147,112 @@ namespace NewRaylibGame
         {
             x = a; y = b; l = c; w = d;
         }
+        /// <summary>
+        /// Sets the x and y varibles
+        /// </summary>
+        /// <param name="a">X</param>
+        /// <param name="b">Y</param>
         public void SetPosition(float a, float b)
         {
             x = a; y = b;
         }
+        /// <summary>
+        /// Changes the x and y position by two floats
+        /// </summary>
+        /// <param name="a">X changes by</param>
+        /// <param name="b">Y changes by</param>
         public void ChangePosition(float a, float b)
         {
             x += a; y += b;
         }
+        /// <summary>
+        /// Sets the Length and Width
+        /// </summary>
+        /// <param name="a">Length</param>
+        /// <param name="b">Width</param>
         public void SetArea(float a, float b)
         {
             w = a; l = b;
         }
+        /// <summary>
+        /// Draws the outline of the box
+        /// </summary>
         public void Draw()
         {
             DrawRectangleLines((int)x, (int)y, (int)w, (int)l, Color.BLACK);
         }
+        /// <summary>
+        /// Checks for the closest point given the vector
+        /// </summary>
+        /// <param name="p">Given vector</param>
+        /// <returns></returns>
         public Vector3 ClosestPoint(Vector3 p)
         {
             return Vector3.Clamp(p, new Vector3(x, y, 1), new Vector3(x+w, y+l, 1));
         }
+        /// <summary>
+        /// Checks if the given box and the current box colides
+        /// </summary>
+        /// <param name="other">Box for collision</param>
+        /// <returns>True or False if collides</returns>
         public bool Overlap(Box other)
         {
             return !(x < other.x || y < other.y || x + l > other.x+ other.l || y + w > other.y + other.w);
+        }
+    }
+    //Not used
+    public class Colour
+    {
+        public UInt32 colour;
+
+        public Colour()
+        {
+            colour = 0x00000000;
+        }
+        public Colour(UInt32 r, UInt32 g, UInt32 b, UInt32 a)
+        {
+            r = (r >> 32);
+            g = (g >> 32);
+            b = (b >> 32);
+            colour = (r << 24) + (g << 16) + (b << 8) + (a >> 32);
+        }
+        public void SetRed(UInt32 r)
+        {
+            colour = (r >> 32);
+            colour = (colour << 24);
+        }
+        public void SetGreen(UInt32 g)
+        {
+            colour = (g >> 32);
+            colour = (colour << 16);
+        }
+        public void SetBlue(UInt32 b)
+        {
+            colour = (b >> 32);
+            colour = (colour << 8);
+        }
+        public void SetAlpha(UInt32 a)
+        {
+            colour = (a >> 32);
+        }
+        public byte GetAlpha()
+        {
+            UInt32 other = (colour << 24);
+            return Convert.ToByte(other >> 24);
+        }
+        public byte GetBlue()
+        {
+            UInt32 other = (colour << 16);
+            return Convert.ToByte(other >> 24);
+        }
+        public byte GetGreen()
+        {
+            UInt32 other = (colour << 8);
+            return Convert.ToByte(other >> 24);
+        }
+        public byte GetRed()
+        {
+            return Convert.ToByte(colour >> 24);
         }
     }
 }

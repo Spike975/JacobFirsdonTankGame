@@ -4,10 +4,12 @@ using System.Text;
 
 namespace NewRaylibGame
 {
+    //Not used
     class OBB
     {
 
     }
+    //Not used
     class AABB
     {
         public Vector3 min = new Vector3();

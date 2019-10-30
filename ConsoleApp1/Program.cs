@@ -12,35 +12,18 @@ namespace NewRaylibGame
 
         public static int Main()
         {
-            // Initialization
-            //--------------------------------------------------------------------------------------
             InitWindow(1000, 1000, "(bad tank pun)");
             SetTargetFPS(60);
             game.Init();
-            //--------------------------------------------------------------------------------------
 
             // Main game loop
-            while (!WindowShouldClose())    // Detect window close button or ESC key
+            while (!WindowShouldClose())
             {
-                // Update
-                //----------------------------------------------------------------------------------
-                // TODO: Update your variables here
-                //----------------------------------------------------------------------------------
-
-                // Draw
-                //----------------------------------------------------------------------------------
                 game.Update();
                 game.Draw();
-
-                //----------------------------------------------------------------------------------
             }
-
-            // De-Initialization
-            //--------------------------------------------------------------------------------------
             game.Shutdown();
-            CloseWindow();        // Close window and OpenGL context
-                                  //--------------------------------------------------------------------------------------
-
+            CloseWindow();
             return 0;
         }
     }
@@ -55,10 +38,6 @@ namespace NewRaylibGame
         SceneObject bulletObject = new SceneObject();
         SceneObject turretObject = new SceneObject();
         SceneObject tankObject = new SceneObject();
-        //SceneObject tankCorner1 = new SceneObject();
-        //SceneObject tankCorner2 = new SceneObject();
-        //SceneObject tankCorner3 = new SceneObject();
-        //SceneObject tankCorner4 = new SceneObject();
         SceneObject bulletSpawner = new SceneObject();
         SceneObject ammoObject = new SceneObject();
         SpriteObject tankSprite = new SpriteObject();
@@ -79,16 +58,19 @@ namespace NewRaylibGame
         long currentTime = 0;
         long lastTime = 0;
         bool fire = false;
+        float sprintTime = 0;
+        float startSprint = 0f;
+        float penaltySprint = 5f;
         float timer = 0;
         float tankSpace = 18;//17.396f;
         float deltaTime = 0.005f;
-        float bulletSpeed = 0;
+        float bulletSpeed = 400;
+        double Score = 0;
         double shotTime = 0f;
         double targetTime = 0;
         double crateTime = 0;
         double phase = 0;
         int currentTargets = 0;
-        int Score = 0;
         int totalBullets = 0;
         int flash = 0;
         int speed = 0;
@@ -97,12 +79,12 @@ namespace NewRaylibGame
         int fps = 1;
         int frames;
         static int capacity = 10;
-        int bull = capacity;
-        Circle[] bulletTest = new Circle[capacity];
+        int bull = 10;
+        Circle[] bulletTest = new Circle[10000];
         Circle[] targets = new Circle[1500];
         Box outerTank = new Box();
         Box[] crates = new Box[10];
-        Bullet[] bullets = new Bullet[capacity];
+        Bullet[] bullets = new Bullet[10000];
         public void Init()
         {
             stopwatch.Start();
@@ -159,6 +141,7 @@ namespace NewRaylibGame
         }
         public void Shutdown()
         { }
+        //Updates every object in game
         public void Update()
         {
             outerTank.x = tankObject.GlobalTransform.m3 - tankSprite.Width / 2f - (tankSpace * Math.Abs(tankObject.GlobalTransform.m1 * tankObject.GlobalTransform.m2));
@@ -185,6 +168,7 @@ namespace NewRaylibGame
             {
                 bullets[i].deathTime += deltaTime;
             }
+            //gets current amount of crates spawned
             foreach (Box c in crates)
             {
                 if (c.x != 0 && c.y != 0)
@@ -192,13 +176,15 @@ namespace NewRaylibGame
                     totalCrates++;
                 }
             }
+            //gets current amount of targets spawned
             foreach(Circle c in targets){
                 if (c.x != 0 && c.y != 0)
                 {
                     currentTargets++;
                 }
             }
-            if ((GetTime() - crateTime > 30f || crateTime == 0) && totalCrates < 10)
+            //Spawns Crates
+            if ((GetTime() - crateTime > 15f || crateTime == 0) && totalCrates < 10)
             {
                 crates[totalCrates].x = rand.Next(10, GetScreenWidth() - crate.width - 10);
                 crates[totalCrates].y = rand.Next(10, GetScreenHeight() - crate.height - 10);
@@ -207,25 +193,41 @@ namespace NewRaylibGame
                 crateTime = GetTime();
                 totalCrates++;
             }
-
-            if ((GetTime() - targetTime > 2f || targetTime == 0) && currentTargets < 1500)
+            //Spawns targets
+            if ((GetTime() - targetTime > 3f || targetTime == 0) && currentTargets < 1500)
             {
-                targets[currentTargets].x = rand.Next(10, GetScreenWidth() - targetSprite.width - 18);
-                targets[currentTargets].y = rand.Next(10, GetScreenHeight() - targetSprite.height - 18);
+                targets[currentTargets].x = rand.Next(targetSprite.width+10, GetScreenWidth() - targetSprite.width-10);
+                targets[currentTargets].y = rand.Next(targetSprite.height+10, GetScreenHeight() - targetSprite.height-10);
                 targets[currentTargets].radius = targetSprite.width / 2f;
                 targetTime = GetTime();
                 Console.WriteLine(currentTargets);
             }
 
-            if (IsKeyDown(KeyboardKey.KEY_LEFT_SHIFT))
+            //Sets speed
+            if (IsKeyDown(KeyboardKey.KEY_LEFT_SHIFT) && sprintTime >= startSprint)
             {
+                if (sprintTime == startSprint)
+                {
+                    startSprint = (float)GetTime();
+                    sprintTime = startSprint;
+                }
+                sprintTime += deltaTime;
                 speed = 2;
+                if (sprintTime - startSprint >= penaltySprint)
+                {
+                    startSprint = sprintTime + penaltySprint;
+                }
             }
             else
             {
+                if ()
+                {
+
+                }
                 speed = 1;
             }
 
+            //MOVEMENT                   ////
             if (IsKeyDown(KeyboardKey.KEY_A))
             {
                 tankObject.Rotate(-deltaTime * speed);
@@ -256,7 +258,10 @@ namespace NewRaylibGame
             {
                 turretObject.Rotate(deltaTime * speed);
             }
-            if (IsKeyDown(KeyboardKey.KEY_SPACE) && GetTime() - shotTime > 1f && capacity > 0)
+            //END MOVEMENT               ////
+
+            //Shooting
+            if (IsKeyDown(KeyboardKey.KEY_SPACE) && GetTime() - shotTime > .75f && capacity > 0)
             {
                 if (totalBullets < 0)
                 {
@@ -269,42 +274,23 @@ namespace NewRaylibGame
                 fire = true;
                 phase = GetTime();
             }
+            //Reload
             if (IsKeyDown(KeyboardKey.KEY_R))
             {
                 capacity += bull;
             }
 
-            if (IsKeyDown(KeyboardKey.KEY_UP))
-            {
-                Vector3 facing = new Vector3(
-                bulletObject.LocalTransform.m1,
-                bulletObject.LocalTransform.m4, 1) * deltaTime * 100 * speed;
-                bulletObject.Translate(facing.x, facing.y);
-            }
-            if (IsKeyDown(KeyboardKey.KEY_DOWN))
-            {
-                Vector3 facing = new Vector3(
-                bulletObject.LocalTransform.m1,
-                bulletObject.LocalTransform.m4, 1) * deltaTime * -100 * speed;
-                bulletObject.Translate(facing.x, facing.y);
-            }
-            if (IsKeyDown(KeyboardKey.KEY_LEFT))
-            {
-                bulletObject.Rotate(-deltaTime * speed);
-            }
-            if (IsKeyDown(KeyboardKey.KEY_RIGHT))
-            {
-                bulletObject.Rotate(deltaTime * speed);
-            }
-
+            //Speeding up the bullets
             if (IsMouseButtonPressed(MouseButton.MOUSE_LEFT_BUTTON))
             {
                 bulletSpeed += 200;
             }
+            //Slowing down the bullets
             if (IsMouseButtonPressed(MouseButton.MOUSE_RIGHT_BUTTON))
             {
                 bulletSpeed -= 200;
             }
+            //Random 
             if (IsKeyPressed(KeyboardKey.KEY_U))
             {
                 tankObject.SetPosition(GetScreenWidth() / 2f, GetScreenHeight() / 2f);
@@ -325,6 +311,10 @@ namespace NewRaylibGame
                 tankObject.SetRotate(0);
                 tankObject.SetPosition(x, y);
             }
+            if (IsKeyPressed(KeyboardKey.KEY_I))
+            {
+                turretObject.SetRotate(0);
+            }
 
             //Bulet Target Overlap Check
             for (int i = 0; i < totalBullets; i++)
@@ -333,6 +323,13 @@ namespace NewRaylibGame
                 {
                     if (bulletTest[i].Overlaps(targets[x]))
                     {
+                        if (bullets[i].deathTime > 1f)
+                        {
+                            Score += bullets[i].deathTime;
+                        }
+                        else {
+                            Score++;
+                        }
                         for (int t = i; t < bull - 1; t++)
                         {
                             bullets[t] = bullets[t + 1];
@@ -340,7 +337,6 @@ namespace NewRaylibGame
                         targets[x] = new Circle();
                         currentTargets--;
                         totalBullets--;
-                        Score++;
                     }
                 }
             }
@@ -357,6 +353,14 @@ namespace NewRaylibGame
                 {
                     if (bulletTest[x].Overlaps(crates[i])&&(bulletTest[x].x != 0 && crates[i].x != 0))
                     {
+                        if (bullets[i].deathTime > 1f)
+                        {
+                            Score -= bullets[i].deathTime;
+                        }
+                        else
+                        {
+                            Score--;
+                        }
                         for (int t = x; t < bull - 1; t++)
                         {
                             bullets[t] = bullets[t + 1];
@@ -364,7 +368,6 @@ namespace NewRaylibGame
                         crates[i] = new Box();
                         totalCrates--;
                         totalBullets--;
-                        Score--;
                     }
                 }
             }
@@ -448,6 +451,7 @@ namespace NewRaylibGame
             tankObject.Update(deltaTime);
             lastTime = currentTime;
         }
+        //Draws every object in game
         public void Draw()
         {
             BeginDrawing();

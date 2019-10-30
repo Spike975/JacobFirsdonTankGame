@@ -8,8 +8,8 @@ namespace NewRaylibGame
     {
         protected SceneObject parent = null;
         protected List<SceneObject> children = new List<SceneObject>();
-        protected Matrix3 localTransform = new Matrix3();
-        protected Matrix3 globalTransform = new Matrix3();
+        public Matrix3 localTransform = new Matrix3();
+        public Matrix3 globalTransform = new Matrix3();
         public Matrix3 LocalTransform
         {
             get { return localTransform; }

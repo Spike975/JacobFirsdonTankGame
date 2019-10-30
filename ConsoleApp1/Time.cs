@@ -15,14 +15,22 @@ namespace NewRaylibGame
         {
             stopwatch.Start();
         }
+        //Resets the time
         public void Reset()
         {
             stopwatch.Reset();
         }
+        /// <summary>
+        /// Returns the current time ran
+        /// </summary>
         public float Seconds
         {
             get { return stopwatch.ElapsedMilliseconds / 1000f; }
         }
+        /// <summary>
+        /// Gets current delta time
+        /// </summary>
+        /// <returns></returns>
         public float GetDeltaTime()
         {
             lastTime = currentTime;
