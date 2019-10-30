@@ -31,6 +31,7 @@ namespace NewRaylibGame
     {
         public Matrix3 transform;
         public double deathTime;
+        public Texture2D bulletText;
     }
     class Game
     {
@@ -46,6 +47,8 @@ namespace NewRaylibGame
         SpriteObject ammoSprite = new SpriteObject();
         SpriteObject bulletExplosion = new SpriteObject();
         Texture2D[] barrels = new Texture2D[5];
+        Texture2D[] bulletTextures = new Texture2D[5];
+        Texture2D[] tankBody = new Texture2D[5];
         Texture2D one = new Texture2D();
         Texture2D two = new Texture2D();
         Texture2D three = new Texture2D();
@@ -91,20 +94,20 @@ namespace NewRaylibGame
             lastTime = stopwatch.ElapsedMilliseconds;
             bulletSprite = LoadTextureFromImage(LoadImage("resources/bulletBlue1_outline.png"));
             targetSprite = LoadTextureFromImage(LoadImage("resources/target.png"));
-            tankSprite.Load("resources/tankBody_blue_outline.png");
+            tankSprite.Load("resources/body1.png");
             // sprite is facing the wrong way... fix that here
             tankSprite.SetRotate(-90 * (float)(Math.PI / 180.0f));
             // sets an offset for the base, so it rotates around the centre
             tankSprite.SetPosition(-tankSprite.Width / 2.0f, tankSprite.Height / 2.0f);
             crate = LoadTextureFromImage(LoadImage($"resources/crate.png"));
-            Console.WriteLine(crate.width + ", " + crate.height);
             turretSprite.Load("resources/barrel1.png");
-            bulletObject.SetPosition(20,20);
-            buletSprite.SetPosition(-buletSprite.Width/2f,0);
+            bulletObject.SetPosition(20, 20);
+            buletSprite.SetPosition(-buletSprite.Width / 2f, 0);
             one = LoadTextureFromImage(LoadImage("resources/shotThin.png"));
             two = LoadTextureFromImage(LoadImage("resources/shotRed.png"));
             three = LoadTextureFromImage(LoadImage("resources/shotOrange.png"));
             four = LoadTextureFromImage(LoadImage("resources/shotLarge.png"));
+            buletSprite.Load("resources/bullet1.png");
             for (int i = 0; i < barrels.Length; i++)
                 barrels[i] = LoadTextureFromImage(LoadImage($"resources/barrel{i + 1}.png"));
 
@@ -116,9 +119,12 @@ namespace NewRaylibGame
 
             for (int i = 0; i < targets.Length; i++)
                 targets[i] = new Circle();
-            
 
-            buletSprite.Load("resources/bulletBlue1_outline.png");
+            for (int i = 0; i < tankBody.Length; i++)
+                tankBody[i] = LoadTextureFromImage(LoadImage($"resources/body{i + 1}.png"));
+            for (int i = 0; i < bulletTextures.Length; i++)
+                bulletTextures[i] = LoadTextureFromImage(LoadImage($"resources/bullet{i + 1}.png"));
+
             turretSprite.SetRotate(-90 * (float)(Math.PI / 180.0f));
             buletSprite.Rotate(90 * (float)(Math.PI / 180.0f));
             bulletExplosion.SetRotate(-90 * (float)(Math.PI / 180.0f));
@@ -144,13 +150,16 @@ namespace NewRaylibGame
         //Updates every object in game
         public void Update()
         {
+            //Sets position for tank's aabb
             outerTank.x = tankObject.GlobalTransform.m3 - tankSprite.Width / 2f - (tankSpace * Math.Abs(tankObject.GlobalTransform.m1 * tankObject.GlobalTransform.m2));
             outerTank.y = tankObject.GlobalTransform.m6 - tankSprite.Height / 2f - (tankSpace * Math.Abs(tankObject.GlobalTransform.m4 * tankObject.GlobalTransform.m5));
             outerTank.w = tankSprite.Width + 1 + (2 * tankSpace * Math.Abs(tankObject.GlobalTransform.m1 * tankObject.GlobalTransform.m2));
             outerTank.l = tankSprite.Height + 1 + (2 * tankSpace * Math.Abs(tankObject.GlobalTransform.m4 * tankObject.GlobalTransform.m5));
-
+            //Sets position for the bullet spawner
             bulletSpawner.SetPosition(turretSprite.Height + 10, -4);
+            //Sets posiotion for 'explosion'
             bulletExplosion.SetPosition(turretSprite.Height - 40, 14);
+            ////TIME/FPS
             currentTime = stopwatch.ElapsedMilliseconds;
             deltaTime = (currentTime - lastTime) / 1000.0f;
             timer += deltaTime;
@@ -161,14 +170,13 @@ namespace NewRaylibGame
                 timer -= 1;
             }
             frames++;
-            totalCrates = 0;
-            currentTargets = 0;
-
+            ////END TIME/FPS
             for (int i = 0; i < totalBullets; i++)
             {
                 bullets[i].deathTime += deltaTime;
             }
             //gets current amount of crates spawned
+            totalCrates = 0;
             foreach (Box c in crates)
             {
                 if (c.x != 0 && c.y != 0)
@@ -177,6 +185,7 @@ namespace NewRaylibGame
                 }
             }
             //gets current amount of targets spawned
+            currentTargets = 0;
             foreach(Circle c in targets){
                 if (c.x != 0 && c.y != 0)
                 {
@@ -200,10 +209,9 @@ namespace NewRaylibGame
                 targets[currentTargets].y = rand.Next(targetSprite.height+10, GetScreenHeight() - targetSprite.height-10);
                 targets[currentTargets].radius = targetSprite.width / 2f;
                 targetTime = GetTime();
-                Console.WriteLine(currentTargets);
             }
 
-            //Sets speed
+            //Sets speed and time limit
             if (IsKeyDown(KeyboardKey.KEY_LEFT_SHIFT) && sprintTime >= startSprint)
             {
                 if (sprintTime == startSprint)
@@ -220,9 +228,9 @@ namespace NewRaylibGame
             }
             else
             {
-                if ()
+                if (GetTime() >= startSprint)
                 {
-
+                    sprintTime = startSprint;
                 }
                 speed = 1;
             }
@@ -268,33 +276,36 @@ namespace NewRaylibGame
                     totalBullets = 0;
                 }
                 bullets[totalBullets].transform = bulletSpawner.GlobalTransform;
+                bullets[totalBullets].bulletText = bulletTextures[barrel];
                 totalBullets++;
                 capacity--;
                 shotTime = GetTime();
                 fire = true;
                 phase = GetTime();
             }
-            //Reload
+            //Reload for testing
             if (IsKeyDown(KeyboardKey.KEY_R))
             {
                 capacity += bull;
             }
-
-            //Speeding up the bullets
+            //Speeding up the bullets for testing
             if (IsMouseButtonPressed(MouseButton.MOUSE_LEFT_BUTTON))
             {
                 bulletSpeed += 200;
             }
-            //Slowing down the bullets
+            //Slowing down the bullets for testing
             if (IsMouseButtonPressed(MouseButton.MOUSE_RIGHT_BUTTON))
             {
                 bulletSpeed -= 200;
             }
-            //Random 
+
+            ////Random
+            //Center tank inn center of screen
             if (IsKeyPressed(KeyboardKey.KEY_U))
             {
                 tankObject.SetPosition(GetScreenWidth() / 2f, GetScreenHeight() / 2f);
             }
+            //Changes Tank Barrel,Will also change tank body
             if (IsKeyPressed(KeyboardKey.KEY_TAB))
             {
                 barrel++;
@@ -302,8 +313,10 @@ namespace NewRaylibGame
                 {
                     barrel = 0;
                 }
+                tankSprite.texture = tankBody[barrel];
                 turretSprite.texture = barrels[barrel];
             }
+            //Sets tank rotation back to when it was spawned
             if (IsKeyPressed(KeyboardKey.KEY_O))
             {
                 float x = tankObject.GlobalTransform.m3;
@@ -311,11 +324,12 @@ namespace NewRaylibGame
                 tankObject.SetRotate(0);
                 tankObject.SetPosition(x, y);
             }
-            if (IsKeyPressed(KeyboardKey.KEY_I))
+            //Rotates turret to starting position
+            if (IsKeyPressed(KeyboardKey.KEY_T))
             {
                 turretObject.SetRotate(0);
             }
-
+            ////End Random
             //Bulet Target Overlap Check
             for (int i = 0; i < totalBullets; i++)
             {
@@ -447,7 +461,7 @@ namespace NewRaylibGame
                     }
                 }
             }
-
+            //Updates tank object
             tankObject.Update(deltaTime);
             lastTime = currentTime;
         }
@@ -456,7 +470,7 @@ namespace NewRaylibGame
         {
             BeginDrawing();
             ClearBackground(Color.WHITE);
-
+            //Bullet explosion
             if (fire && GetTime() - phase > .015f)
             {
                 if (flash == 0)
@@ -492,6 +506,7 @@ namespace NewRaylibGame
                 }
             }
 
+            ////TANK RAP AROUND
             if (tankObject.GlobalTransform.m3 < -tankSprite.Width)
             {
                 tankObject.GlobalTransform.m3 = GetScreenWidth() + tankSprite.Width;
@@ -508,28 +523,31 @@ namespace NewRaylibGame
             {
                 tankObject.GlobalTransform.m6 = -tankSprite.Height;
             }
-
+            ////END TANK RAP AROUND
+            //Draws crates
             for (int i = 0; i < totalCrates; i++)
             {
                 DrawTexture(crate, (int)crates[i].x, (int)crates[i].y, Color.WHITE);
                 //DrawRectangleLines((int)crates[i].x, (int)crates[i].y, (int)crates[i].w, (int)crates[i].l, Color.BLACK);
             }
-
+            //Bullets
             for (int i = 0; i < totalBullets; i++)
             {
+                //Finds the rotation of bullets
                 float rotation = (float)Math.Atan2(bullets[i].transform.m4, bullets[i].transform.m1);
-                DrawTextureEx(bulletSprite, new Vector2(bullets[i].transform.m3, bullets[i].transform.m6), rotation * (float)(180.0f / Math.PI) + 90, 1, Color.WHITE);
-
+                //Draws bullet
+                DrawTextureEx(bullets[i].bulletText, new Vector2(bullets[i].transform.m3, bullets[i].transform.m6), rotation * (float)(180.0f / Math.PI) + 90, 1, Color.WHITE);
+                //Sets bullets circle points
                 bulletTest[i].x = bullets[i].transform.m3 - (((float)(Math.Sqrt(bulletSprite.height*bulletSprite.height+bulletSprite.width*bulletSprite.width)-Math.Atan2(bulletSprite.width,bulletSprite.height)*5)*bullets[i].transform.m1)/2);
                 bulletTest[i].y = bullets[i].transform.m6 - (((float)(Math.Sqrt(bulletSprite.height*bulletSprite.height+bulletSprite.width*bulletSprite.width)-Math.Atan2(bulletSprite.width,bulletSprite.height)*5)*bullets[i].transform.m4)/2);
-                
+                //Sets bullet circle radius
                 bulletTest[i].radius = bulletSprite.height / 2f;
 
                 //DrawCircleLines((int)bulletTest[i].x, (int)bulletTest[i].y, bulletTest[i].radius, Color.BLACK);
-
+                //Changes bullet position
                 bullets[i].transform.m3 += bulletSpeed * bullets[i].transform.m1 * deltaTime;
                 bullets[i].transform.m6 += bulletSpeed * bullets[i].transform.m4 * deltaTime;
-
+                ////BULLET RAP AROUND
                 if (bullets[i].transform.m3 > GetScreenWidth() + bulletSprite.width)
                 {
                     bullets[i].transform.m3 = -bulletSprite.width;
@@ -546,6 +564,8 @@ namespace NewRaylibGame
                 {
                     bullets[i].transform.m6 = GetScreenHeight() + bulletSprite.height;
                 }
+                ////END RAP AROUND
+                //Bullet deletion if added
                 //if (bullets[i].transform.m3 > GetScreenWidth() + bulletSprite.width)//640, 480
                 //{
                 //    for (int x = i; x < bull - 1; x++)
@@ -582,20 +602,23 @@ namespace NewRaylibGame
                 //    }
                 //    totalBullets--;
                 //}
+                //End bullet deletion
             }
-
+            //Draws targets
             for(int i = 0; i < currentTargets; i++)
             {
                 DrawTexture(targetSprite,(int)targets[i].x-targetSprite.width/2,(int)targets[i].y- targetSprite.height/2,Color.WHITE);
                 //DrawCircleLines((int)targets[i].x,(int)targets[i].y,(int)targets[i].radius, Color.BLUE);
             }
 
-            //DrawRectangleLines((int)tank.min.x, (int)tank.min.y, (int)(tank.max.x - tank.min.x), (int)(tank.max.y - tank.min.y), Color.BLACK);
-            //DrawRectangleLines((int)tankOuter.min.x, (int)tankOuter.min.y, (int)tankOuter.max.x, (int)tankOuter.max.y, Color.BLACK);
-            //DrawRectangleLines((int)outerTank.x, (int)outerTank.y, (int)outerTank.w, (int)outerTank.l, Color.BLACK);
+            //Draws AABB for tank
+            DrawRectangleLines((int)outerTank.x, (int)outerTank.y, (int)outerTank.w, (int)outerTank.l, Color.BLACK);
+            //Draws 'OBB' for tank
             //DrawRectanglePro(new Rectangle(tankObject.GlobalTransform.m3, tankObject.GlobalTransform.m6, tankSprite.Width, tankSprite.Height), new Vector2(tankSprite.Width / 2f, tankSprite.Height / 2f), (float)Math.Atan2(tankSprite.GlobalTransform.m4, tankSprite.GlobalTransform.m1) * (float)(180.0f / Math.PI) + 90, Color.RED);
-            
+
+            //Draws Tank and children
             tankObject.Draw();
+            //Draws Text
             DrawText(fps.ToString(), 10, 10, 12, Color.RED);
             DrawText(capacity.ToString(), 10, GetScreenHeight() - 20, 20, Color.RED);
             DrawText("Score: "+Score.ToString(),GetScreenWidth()-150,10, 20, Color.RED);

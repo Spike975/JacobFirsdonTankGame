@@ -197,62 +197,19 @@ namespace NewRaylibGame
         /// <returns>True or False if collides</returns>
         public bool Overlap(Box other)
         {
-            return !(x < other.x || y < other.y || x + l > other.x+ other.l || y + w > other.y + other.w);
+            //This seemes to work better then the original code, no clue why
+            if (x < other.x + other.w && y < other.y + other .l &&x > other.x && y > other.y)
+                return true;
+            if (x + w > other.x && x + w < other.x+other.w&& y+l>other.y&&y+l<other.y+other.l)
+                return true;
+            if (x + w > other.x && x + w < other.x + other.w && y> other.y && y < other.y + other.l)
+                return true;
+            if (x > other.x && x < other.x + other.w && y + l > other.y && y + l < other.y + other.l)
+                return true;
+            return false;
+            //return !(x < other.x || y < other.y || x+w > other.x + other.w || y+l > other.y+other.l);
         }
     }
     //Not used
-    public class Colour
-    {
-        public UInt32 colour;
-
-        public Colour()
-        {
-            colour = 0x00000000;
-        }
-        public Colour(UInt32 r, UInt32 g, UInt32 b, UInt32 a)
-        {
-            r = (r >> 32);
-            g = (g >> 32);
-            b = (b >> 32);
-            colour = (r << 24) + (g << 16) + (b << 8) + (a >> 32);
-        }
-        public void SetRed(UInt32 r)
-        {
-            colour = (r >> 32);
-            colour = (colour << 24);
-        }
-        public void SetGreen(UInt32 g)
-        {
-            colour = (g >> 32);
-            colour = (colour << 16);
-        }
-        public void SetBlue(UInt32 b)
-        {
-            colour = (b >> 32);
-            colour = (colour << 8);
-        }
-        public void SetAlpha(UInt32 a)
-        {
-            colour = (a >> 32);
-        }
-        public byte GetAlpha()
-        {
-            UInt32 other = (colour << 24);
-            return Convert.ToByte(other >> 24);
-        }
-        public byte GetBlue()
-        {
-            UInt32 other = (colour << 16);
-            return Convert.ToByte(other >> 24);
-        }
-        public byte GetGreen()
-        {
-            UInt32 other = (colour << 8);
-            return Convert.ToByte(other >> 24);
-        }
-        public byte GetRed()
-        {
-            return Convert.ToByte(colour >> 24);
-        }
-    }
+    
 }
