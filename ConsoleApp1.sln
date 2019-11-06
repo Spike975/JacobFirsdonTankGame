@@ -5,9 +5,9 @@ VisualStudioVersion = 15.0.27703.2042
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewRaylibGame", "ConsoleApp1\NewRaylibGame.csproj", "{2DD78560-DC67-47A6-8041-3997B85EE7AB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestProject", "..\MathForGamesCSUnitTesting-master\UnitTestProject\UnitTestProject.csproj", "{2731BE78-C467-4E92-9381-4F6B9EA68963}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestProject", "UnitTestProject\UnitTestProject.csproj", "{2731BE78-C467-4E92-9381-4F6B9EA68963}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MathClasses", "..\MathForGamesCSUnitTesting-master\MathClasses\MathClasses.csproj", "{93BC4FF5-4A18-468D-A676-F62F770A6937}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MathClasses", "MathClasses\MathClasses.csproj", "{93BC4FF5-4A18-468D-A676-F62F770A6937}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
